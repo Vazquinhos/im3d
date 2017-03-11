@@ -387,6 +387,7 @@ struct AppData
 	Vec2   m_viewportSize;        // Viewport size (pixels).
 	float  m_projScaleY;          // Scale factor used to convert from pixel size -> world scale; use tan(fov) for perspective projections, far plane height for ortho.
 	bool   m_projOrtho;           // If the projection matrix is orthographic.
+	Mat4   m_cullViewProj;        // View/proj matrix to use for culling.
 	float  m_deltaTime;           // Time since previous frame (seconds).
 	float  m_snapTranslation;     // Snap value for translation gizmos (world units). 0 = disabled.
 	float  m_snapRotation;        // Snap value for rotation gizmos (radians). 0 = disabled.
@@ -466,6 +467,9 @@ public:
 	void        reset();
 	void        draw();
 
+	bool        isVisible(const Vec3& _point); // cull point
+	bool        isVisible(const Vec3& _a, const Vec3& _b); // cull line
+	bool        isVisible(const Vec3& _a, const Vec3& _b, const Vec3& _c); // cull triangle
 
 	void        setColor(Color _color)           { m_colorStack.back() = _color;   }
 	Color       getColor() const                 { return m_colorStack.back();     }
@@ -486,6 +490,9 @@ public:
 	bool        getEnableSorting() const         { return m_enableSortingStack.back(); }
 	void        pushEnableSorting(bool _enable);
 	void        popEnableSorting();
+
+	void        setEnableCulling(bool _enable)   { m_enableCulling = _enable; }
+	bool        getEnableCulling() const         { return m_enableCulling;    }
 	
 	void        setMatrix(const Mat4& _mat4)     { m_matrixStack.back() = _mat4;   }
 	const Mat4& getMatrix() const                { return m_matrixStack.back();    }
@@ -568,6 +575,7 @@ private:
 	int                m_primList;                 // 1 if sorting enabled, else 0.
 	U32                m_firstVertThisPrim;        // Index of the first vertex pushed during this primitive.
 	U32                m_vertCountThisPrim;        // # calls to vertex() since the last call to begin().
+	bool               m_enableCulling;
 
  // app data
 	AppData            m_appData;

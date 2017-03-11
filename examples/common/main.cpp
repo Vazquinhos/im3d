@@ -15,7 +15,7 @@ int main(int, char**)
 
 		ImGui::Begin("Im3d Demo", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
 
-		ImGui::SetNextTreeNodeOpen(true, ImGuiSetCond_Once);
+		//ImGui::SetNextTreeNodeOpen(true, ImGuiSetCond_Once);
 		if (ImGui::TreeNode("About")) {
 			ImGui::Text("Welcome to the Im3d demo!");
 			ImGui::Spacing();
@@ -29,7 +29,7 @@ int main(int, char**)
 		}
 		ImGui::Spacing();
 
-		ImGui::SetNextTreeNodeOpen(true, ImGuiSetCond_Once);
+		//ImGui::SetNextTreeNodeOpen(true, ImGuiSetCond_Once);
 		if (ImGui::TreeNode("Unified Gizmo")) {
 		 // unified gizmo operates directly on a 4x4 matrix using the context-global gizmo modes
 			static Im3d::Mat4 transform(1.0f);
@@ -381,8 +381,50 @@ int main(int, char**)
 			ImGui::TreePop();
 		}
 
-
 		ImGui::SetNextTreeNodeOpen(true, ImGuiSetCond_Once);
+		if (ImGui::TreeNode("Culling")) {
+			bool enableCulling = Im3d::GetContext().getEnableCulling();
+			if (ImGui::Checkbox("Enable culling", &enableCulling)) {
+				Im3d::GetContext().setEnableCulling(enableCulling);
+			}
+
+			static const char* primList = 
+				//PrimitiveMode_None,
+				"Points\0"
+				"Lines\0"
+				"LineStrip\0"
+				"LineLoop\0"
+				"Triangles\0"
+				"TriangleStrip\0"
+				;
+			static const int primMinVerts[] = 
+			{
+				//PrimitiveMode_None,
+				1,//PrimitiveMode_Points,
+				2,//PrimitiveMode_Lines,
+				3,//PrimitiveMode_LineStrip,
+				3,//PrimitiveMode_LineLoop,
+				3,//PrimitiveMode_Triangles,
+				4 //PrimitiveMode_TriangleStrip
+			};
+			static int currentPrim = Im3d::PrimitiveMode_Points - 1;
+			ImGui::Combo("Primitive", &currentPrim, primList);
+
+			static int count = 0;
+			ImGui::SliderInt("Count", &count, 1, 1000);
+			//count = Im3d::Max(count, primMinVerts[currentPrim]);
+
+			Im3d::GetContext().begin((Im3d::PrimitiveMode)(currentPrim + 1));
+			for (int i = 0; i < count * primMinVerts[currentPrim]; ++i) {
+				Im3d::Vertex(Im3d::RandVec3(-10.0f, 10.0f), 8.0f, Im3d::RandColor(0.0f, 1.0f));
+			}		
+			Im3d::End();
+
+			ImGui::TreePop();
+		}
+
+
+		//ImGui::SetNextTreeNodeOpen(true, ImGuiSetCond_Once);
 		if (ImGui::TreeNode("Grid")) {
 			static int gridSize = 20;
 			ImGui::SliderInt("Grid Size", &gridSize, 1, 50);

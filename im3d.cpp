@@ -939,13 +939,33 @@ void Context::vertex(const Vec3& _position, float _size, Color _color)
 
 	switch (m_primMode) {
 		case PrimitiveMode_Points:
+			if (m_enableCulling) {
+				if (!isVisible(vd.m_positionSize)) {
+					return;
+				}
+			}
 			m_vertexData[DrawPrimitive_Points][m_primList].push_back(vd);
 			break;
 		case PrimitiveMode_Lines:
+			if (m_enableCulling && m_vertCountThisPrim >= 1 && (m_vertCountThisPrim + 1) % 2 == 0) {
+				if (!isVisible(vd.m_positionSize, m_vertexData[DrawPrimitive_Lines][m_primList].back().m_positionSize)) {
+					m_vertexData[DrawPrimitive_Lines][m_primList].pop_back();
+					--m_vertCountThisPrim;
+					return;
+				}
+			}
 			m_vertexData[DrawPrimitive_Lines][m_primList].push_back(vd);
 			break;
 		case PrimitiveMode_LineStrip:
 		case PrimitiveMode_LineLoop:
+			// \todo can't cull line strips/loops in the middle of rendering
+			//if (m_enableCulling && m_vertCountThisPrim >= 1) {
+			//	if (!isVisible(vd.m_positionSize, m_vertexData[DrawPrimitive_Lines][m_primList].back().m_positionSize)) {
+			//		m_vertexData[DrawPrimitive_Lines][m_primList].pop_back();
+			//		--m_vertCountThisPrim;
+			//		return;
+			//	}
+			//}
 			if (m_vertCountThisPrim >= 2) {
 				m_vertexData[DrawPrimitive_Lines][m_primList].push_back(m_vertexData[DrawPrimitive_Lines][m_primList].back());
 				++m_vertCountThisPrim;
@@ -953,6 +973,17 @@ void Context::vertex(const Vec3& _position, float _size, Color _color)
 			m_vertexData[DrawPrimitive_Lines][m_primList].push_back(vd);
 			break;
 		case PrimitiveMode_Triangles:
+			if (m_enableCulling && m_vertCountThisPrim >= 2 && (m_vertCountThisPrim + 1) % 3 == 0) {
+				U32 sz = m_vertexData[DrawPrimitive_Triangles][m_primList].size();
+				Vec3 b = m_vertexData[DrawPrimitive_Triangles][m_primList][sz - 1].m_positionSize;
+				Vec3 c = m_vertexData[DrawPrimitive_Triangles][m_primList][sz - 2].m_positionSize;
+				if (!isVisible(vd.m_positionSize, b, c)) {
+					m_vertexData[DrawPrimitive_Triangles][m_primList].pop_back();
+					m_vertexData[DrawPrimitive_Triangles][m_primList].pop_back();
+					m_vertCountThisPrim -= 2;
+					return;
+				}
+			}
 			m_vertexData[DrawPrimitive_Triangles][m_primList].push_back(vd);
 			break;
 		case PrimitiveMode_TriangleStrip:
@@ -1036,6 +1067,40 @@ void Context::draw()
 	}
 	
 	m_drawCalled = true;
+}
+
+// \todo need to incorporate radius here
+bool Context::isVisible(const Vec3& _point)
+{
+	Vec4 clip = m_appData.m_cullViewProj * Vec4(_point, 1.0f);
+	if (fabs(clip.x) > clip.w || fabs(clip.y) > clip.w || fabs(clip.z > clip.w)) {
+		return false;
+	}
+	return true;
+}
+bool Context::isVisible(const Vec3& _a, const Vec3& _b)
+{
+	Vec4 clipA = m_appData.m_cullViewProj * Vec4(_a, 1.0f);
+	Vec4 clipB = m_appData.m_cullViewProj * Vec4(_b, 1.0f);
+	for (int i = 0; i < 3; ++i) {
+		if (fabs(clipA[i]) > clipA.w && fabs(clipB[i]) > clipB.w && signbit(clipA[i]) == signbit(clipB[i])) {
+			return false;
+		}
+	}
+	return true;
+}
+bool Context::isVisible(const Vec3& _a, const Vec3& _b, const Vec3& _c)
+{
+	Vec4 clipA = m_appData.m_cullViewProj * Vec4(_a, 1.0f);
+	Vec4 clipB = m_appData.m_cullViewProj * Vec4(_b, 1.0f);
+	Vec4 clipC = m_appData.m_cullViewProj * Vec4(_c, 1.0f);
+	for (int i = 0; i < 3; ++i) {
+		if (fabs(clipA[i]) > clipA.w && fabs(clipB[i]) > clipB.w && fabs(clipC[i]) > clipC.w && 
+				signbit(clipA[i]) == signbit(clipB[i]) && signbit(clipB[i]) == signbit(clipC[i])) {
+			return false;
+		}
+	}
+	return true;
 }
 
 void Context::pushEnableSorting(bool _enable)
