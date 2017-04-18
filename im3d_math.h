@@ -247,6 +247,35 @@ inline bool AllLess(const T& _a, const T& _b)
 	return true;
 }
 
+inline float   Sqrt(float _val) { return std::sqrt(_val); }
+inline float   Sin(float _ang) { return std::sin(_ang); }
+inline float   Cos(float _ang) { return std::cos(_ang); }
+inline float   Tan(float _ang) { return std::tan(_ang); }
+inline void    SinCos(float _ang, float& s_, float& c_) { s_ = Sin(_ang);  c_ = Cos(_ang); }
+inline float   ASin(float _val) { return std::asin(_val); }
+inline float   ACos(float _val) { return std::acos(_val); }
+inline float   ATan(float _val) { return std::atan(_val); }
+inline float   ATan2(float _x, float _y) { return std::atan2(_x, _y); }
+inline float   Square(float _val) { return _val*_val; }
+inline float   PowN(float _val, int _n) { float r = 1.0f; if (_n > 0) for (int i = 0; i < _n; ++i) { r *= _val; } else if (_n < 0) { for (int i = 0; i < -_n; ++i) r /= _val; } return r; }
+inline float   Log(float _val) { return std::log(_val); }
+inline float   LogBase(float _val, float base) { return float(Log(_val) / Log(base)); }
+inline float   Min(float _a, float _b) { return _a < _b ? _a : _b; }
+inline float   Max(float _a, float _b) { return _a > _b ? _a : _b; }
+inline float   Clamp(float _val, float _min, float _max) { assert(_max >= _min);  float r = Min(_val, _max); r = Max(r, _min);  return r; }
+inline float   Abs(float _val) { return std::fabs(_val); }
+inline float   Floor(float _val) { return std::floor(_val); }
+inline float   Ceil(float _val) { return std::ceil(_val); }
+inline float   Round(float _val) { return (_val > 0.0f) ? std::floorf(_val + 0.5f) : std::ceilf(_val - 0.5f); }
+inline float   Exp(float _val) { return std::exp(_val); }
+inline float   Lerp(const float _x, float _y, float _s) { return _x + (_y - _x) * _s; }
+inline float   Rad2Deg(float radians) { return (radians * 180.0f) / Pi; }
+inline float   DegToRad(float degrees) { return (degrees * Pi) / 180.0f; }
+inline bool    IsPositive(float _val) { return (*(int*)(&_val) & 0x80000000) == 0; }
+inline float   Sign(float _val) { int i = static_cast<int>((*(int*)(&_val) & 0x80000000 | 0x3F800000)); return *(float*)(&i); }
+inline float   Saturate(float _val) { return Clamp(_val, 0.0f, 1.0f); }
+inline float   Smoothstep(float start, float end, float x) { x = Saturate((x - start) / (end - start)); return x * x * (3.0f - 2.0f * x); }
+
 } // namespace Im3d
 
 #endif // im3d_math_h
