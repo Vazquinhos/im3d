@@ -1701,6 +1701,25 @@ const float Im3d::Pi     = 3.14159265359f;
 const float Im3d::TwoPi  = 2.0f * Pi;
 const float Im3d::HalfPi = 0.5f * Pi;
 
+Vec2 Vec2::down = Vec2(0.0f, -1.0f);
+Vec2 Vec2::up = Vec2(0.0f, 1.0f);
+Vec2 Vec2::right = Vec2(1.0f, 0.0f);
+Vec2 Vec2::left = Vec2(-1.0f, 0.0f);
+Vec2 Vec2::one = Vec2(1.0f, 1.0f);
+Vec2 Vec2::zero = Vec2(0.0f, 0.0f);
+
+Vec3 Vec3::back = Vec3(0.0f, 0.0f, -1.0f);
+Vec3 Vec3::forward = Vec3(0.0f, 0.0f, 1.0f);
+Vec3 Vec3::down = Vec3(0.0f, -1.0f, 0.0f);
+Vec3 Vec3::up = Vec3(0.0f, 1.0f, 0.0f);
+Vec3 Vec3::right = Vec3(1.0f, 0.0f, 0.0f);
+Vec3 Vec3::left = Vec3(-1.0f, 0.0f, 0.0f);
+Vec3 Vec3::one = Vec3(1.0f, 1.0f, 1.0f);
+Vec3 Vec3::zero = Vec3(0.0f, 0.0f, 0.0f);
+
+Vec4 Vec4::one = Vec4(1.0f, 1.0f, 1.0f, 1.0f);
+Vec4 Vec4::zero = Vec4(0.0f, 0.0f, 0.0f, 0.0f);
+
 // Vec3
 Vec3::Vec3(const Vec4& _v)
 	: x(_v.x)

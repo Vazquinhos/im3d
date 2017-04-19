@@ -31,6 +31,9 @@
 //#define IM3D_MAT4_APP \
 //	Mat4(const glm::mat4& _m)          { for (int i = 0; i < 16; ++i) m[i] = *(&(_m[0][0]) + i); } \
 //	operator glm::mat4() const         { glm::mat4 ret; for (int i = 0; i < 16; ++i) *(&(ret[0][0]) + i) = m[i]; }
+#define IM3D_SERIALIZATION_CEREAL \
+template <class Archive> void save(Archive & ar) const; \
+template <class Archive> void load(Archive & ar);
 
 	
 #endif // im3d_config_h

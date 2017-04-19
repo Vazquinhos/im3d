@@ -175,6 +175,15 @@ struct Vec2
 	#ifdef IM3D_VEC2_APP
 		IM3D_VEC2_APP
 	#endif
+    #ifdef IM3D_SERIALIZATION_CEREAL
+        IM3D_SERIALIZATION_CEREAL
+    #endif
+    static Vec2 up;
+    static Vec2 down;
+    static Vec2 left;
+    static Vec2 right;
+    static Vec2 one;
+    static Vec2 zero;
 };
 struct Vec3
 { 
@@ -189,6 +198,17 @@ struct Vec3
 	#ifdef IM3D_VEC3_APP
 		IM3D_VEC3_APP
 	#endif
+    #ifdef IM3D_SERIALIZATION_CEREAL
+            IM3D_SERIALIZATION_CEREAL
+    #endif
+    static Vec3 back;
+    static Vec3 forward;
+    static Vec3 up;
+    static Vec3 down;
+    static Vec3 left;
+    static Vec3 right;
+    static Vec3 one;
+    static Vec3 zero;
 };
 struct Vec4
 { 
@@ -198,11 +218,16 @@ struct Vec4
 	Vec4(float _x, float _y, float _z, float _w): x(_x), y(_y), z(_z), w(_w) {}
 	Vec4(const Vec3& _xyz, float _w): x(_xyz.x), y(_xyz.y), z(_xyz.z), w(_w) {}
 	Vec4(Color _rgba);
-	operator float*()                                                        { return &x; }
-	operator const float*() const                                            { return &x; }
+	operator float*()             { return &x; }
+	operator const float*() const { return &x; }
 	#ifdef IM3D_VEC4_APP
 		IM3D_VEC4_APP
 	#endif
+    #ifdef IM3D_SERIALIZATION_CEREAL
+        IM3D_SERIALIZATION_CEREAL
+    #endif
+    static Vec4 one;
+    static Vec4 zero;
 };
 struct Mat3
 {
