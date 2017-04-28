@@ -4,7 +4,7 @@
 
 #include "im3d_config.h"
 
-#ifdef IM3D_SERIALIZATION_CEREAL
+#ifndef IM3D_SERIALIZATION_CEREAL
 template <class Archive> void Vec2::save(Archive & ar) const
 {
     ar(cereal::make_nvp("x", x));
@@ -21,7 +21,6 @@ template <class Archive> void Vec3::save(Archive & ar) const
     ar(cereal::make_nvp("y", y));
     ar(cereal::make_nvp("z", z));
 }
-
 template <class Archive> void Vec3::load(Archive & ar)
 {
     ar(cereal::make_nvp("x", x));
